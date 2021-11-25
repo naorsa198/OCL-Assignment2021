@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
-public class Booking implements  ITestable{
+public class Booking implements  ITestable {
     private Date date;
     private Room room;
     private ArrayList<HotelService> services;
@@ -10,23 +11,25 @@ public class Booking implements  ITestable{
     private Review review;
 
 
-    public Booking(Date a_date, Room a_room){
+    public Booking(Date a_date, Room a_room) {
         date = a_date;
         room = a_room;
         services = new ArrayList<HotelService>();
     }
 
-    public void addService(HotelService s){
+    public void addService(HotelService s) {
         services.add(s);
     }
 
-    public void addReview(Review a_review) {review  = a_review; }
+    public void addReview(Review a_review) {
+        review = a_review;
+    }
 
-    public void addReservation(Reservation r){
+    public void addReservation(Reservation r) {
         reservation = r;
     }
 
-    public void assignRoom(Room room){
+    public void assignRoom(Room room) {
         this.room = room;
     }
 
@@ -60,6 +63,59 @@ public class Booking implements  ITestable{
     }
 
     public static boolean checkAllIntancesConstraints(Model model){
+        HashSet<Booking> allInstances = model.BookingAllInstances();
+        for(Booking booking : allInstances){
+            if(!booking.checkConstraints()){
+                return false;
+            }
+        }
         return true;
     }
+
+
+    private boolean constrain5() {
+        if (this.room == null || this.room.getRoomCategory() == null) {
+            return false;
+        }
+
+        if (this.room.getRoomCategory().getType() == RoomCategory.RoomType.VIP)
+            for (HotelService hotelService : this.services) {
+                Service serv = hotelService.getService();
+                if (!(serv instanceof VipService))
+                    return false;
+            }
+        return true;
+    }
+
+    private boolean constrain8() {
+        if (this.reservation.getRoomCategory()== null){return false;}
+        RoomCategory.RoomType orderedRoom = this.reservation.getRoomCategory().getType();
+        RoomCategory.RoomType providedRoom = this.reservation.getBookings().getRoom().getRoomCategory().getType();
+
+        if (orderedRoom == RoomCategory.RoomType.BASIC &&
+                (providedRoom == RoomCategory.RoomType.VIP || providedRoom == RoomCategory.RoomType.SUITE)){
+            return true;
+        }
+        if (orderedRoom == RoomCategory.RoomType.SUITE &&
+                providedRoom == RoomCategory.RoomType.BASIC){
+            return false;
+        }
+
+        if (orderedRoom == RoomCategory.RoomType.BASIC &&
+                providedRoom == RoomCategory.RoomType.SUITE){
+            return true;
+        }
+        if (orderedRoom == RoomCategory.RoomType.VIP &&
+                (providedRoom == RoomCategory.RoomType.BASIC || providedRoom == RoomCategory.RoomType.SUITE)){
+            return false;
+        }
+        if (orderedRoom == RoomCategory.RoomType.BASIC &&
+                (providedRoom == RoomCategory.RoomType.VIP || providedRoom == RoomCategory.RoomType.SUITE)){
+            return true;
+        }
+        return true;
+    }
+
+
+
 }

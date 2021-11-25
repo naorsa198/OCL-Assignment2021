@@ -1,8 +1,5 @@
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
+import java.util.*;
 
 public class Group implements  ITestable {
     private int groupId;
@@ -30,11 +27,17 @@ public class Group implements  ITestable {
 
     @Override
     public boolean checkConstraints() {
-        // check for 2 hotels same group
+        return const1() && const4();
 
     }
 
-    public static boolean checkAllIntancesConstraints(Model model) {
+    public static boolean checkAllIntancesConstraints(Model model){
+        HashSet<Group> allInstances = model.GroupAllInstances();
+        for(Group group : allInstances){
+            if(!group.checkConstraints()){
+                return false;
+            }
+        }
         return true;
     }
 
@@ -54,4 +57,15 @@ public class Group implements  ITestable {
         return true;
     }
 
+
+    private boolean const4() {
+        List<Set<Service>> hotelsServices = new ArrayList<>();
+        for (Hotel hotel : hotels) {
+            hotelsServices.add(hotel.getServices().keySet());
+        }
+
+        if( hotelsServices.stream().distinct().count() <= 1)
+            return true;
+        return false;
+    }
 }

@@ -141,13 +141,15 @@ public class Hotel implements  ITestable{
     }
 
     private boolean Constraint11() {
-        for (Service service : this.services.keySet()) {
-            for (Service service1 : this.services.keySet()) {
-                if (service != service1)
-                    if (service.getServiceName().equals(service1.getServiceName())) {
-                        return false;
-                    }
+        Iterator<Service> it = services.keySet().iterator();
+        ArrayList<String> hotelserv = new ArrayList<String>();
+        Service ser = null;
+        while (it.hasNext()) {
+            ser = it.next();
+            if (hotelserv.contains(ser.getServiceName().toLowerCase())) {
+                return false;
             }
+            hotelserv.add(ser.getServiceName().toLowerCase());
         }
         return true;
     }
