@@ -1,5 +1,6 @@
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Reservation implements  ITestable {
     private int id;
@@ -54,15 +55,31 @@ public class Reservation implements  ITestable {
 
     @Override
     public boolean checkConstraints() {
-        if (this.reservationSet.getHotel().ge )
 
-        return true;
+        return constraint3();
     }
 
     public static boolean checkAllIntancesConstraints(Model model) {
+        HashSet<Reservation> allInstances = model.ReservationAllInstances();
+        for (Reservation reservation : allInstances) {
+            if (!reservation.checkConstraints()) {
+                return false;
+            }
+        }
         return true;
     }
 
+    private boolean constraint3() {
+        if (this.reservationSet == null ||
+                this.reservationSet.getHotel() == null ||
+                this.booking == null ||
+                this.booking.getRoom() == null ||
+                this.booking.getRoom().getHotel() == null||
+                this.reservationSet.getHotel().getName() == null) return false;
 
+        Hotel rsHotel = this.reservationSet.getHotel();
+        Hotel rsBooking = this.booking.getRoom().getHotel();
+        return rsHotel == rsBooking;
+    }
 }
     

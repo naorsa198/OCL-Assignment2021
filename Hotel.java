@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Hotel implements  ITestable{
     private String name;
@@ -60,12 +59,101 @@ public class Hotel implements  ITestable{
     @Override
     public boolean checkConstraints() {
 
-
-
+    return Constraint2() && Constraint6() && Constraint7() && Constraint10() && Constraint11();
 
     }
 
     public static boolean checkAllIntancesConstraints(Model model){
+        HashSet<Hotel> allInstances = model.HotelAllInstances();
+        for (Hotel hotel : allInstances) {
+            if (!hotel.checkConstraints()) {
+                return false;
+            }
+        }
         return true;
     }
+
+
+    private boolean Constraint2() {
+        HashMap<Client, Integer> reservationCount = new HashMap<>();
+        Set<Client> clientSet;
+        clientSet = allReservation.keySet();
+        for (Client client : clientSet) {
+            reservationCount.put(client, allReservation.get(client).getReservations().size());
+        }
+        ArrayList<Client> aboveFive = new ArrayList<>();
+        for (Client client : reservationCount.keySet()) {
+            if (reservationCount.get(client) >= 5)
+                aboveFive.add(client);
+        }
+        int counter = 0;
+        for (Client client : aboveFive) {
+            ReservationSet reservationSet = this.allReservation.get(client);
+            for (Reservation reservation : reservationSet.getReservations())
+                if (reservation.getRoomCategory().getType() == RoomCategory.RoomType.VIP) {
+                    counter++;
+                    break;
+                }
+        }
+        return counter == aboveFive.size();
+    }
+
+    private boolean Constraint6() {
+        int numRoomsInHotel = this.rooms.size();
+        int VipRooms = 0;
+        for (Room room : this.rooms.values()) {
+            if (room.getRoomCategory() == null || room.getRoomCategory().getType() == null)
+                return false;
+            VipRooms= (room.getRoomCategory().getType() == RoomCategory.RoomType.VIP) ? VipRooms+1 : VipRooms+0;
+        }
+        return VipRooms <= 0.1 * numRoomsInHotel;
+    }
+
+    private boolean Constraint7() {
+        String cityName = "las vegas";
+        if (!this.city.equals(cityName.toUpperCase()) && !this.city.equals(cityName)) return true;
+        for (Client client : this.allReservation.keySet()) {
+            if (client.getAge() < 21) return false;
+        }
+        return true;
+    }
+
+
+    private boolean Constraint10() {
+        if (this.rate > 5){
+            if (this.allReservation.values().size() == 0) return true;
+        ArrayList<Review> rlst = new ArrayList<>();
+        for (ReservationSet reservationSet : this.allReservation.values()) {
+            for (Reservation reservation : reservationSet.getReservations()) {
+                if (reservation.getBookings() == null) break;
+                if (reservation.getBookings().getReview() == null) break;
+                rlst.add(reservation.getBookings().getReview());
+            }
+        }
+        float sum = 0;
+        for (Review review : rlst) {
+            sum += review.getRank();
+        }
+        return sum / rlst.size() > 7.5;
+    }
+    else
+        return true;
+    }
+
+    private boolean Constraint11() {
+        for (Service service : this.services.keySet()) {
+            for (Service service1 : this.services.keySet()) {
+                if (service != service1)
+                    if (service.getServiceName().equals(service1.getServiceName())) {
+                        return false;
+                    }
+            }
+        }
+        return true;
+    }
+
+
+
+
+
 }
