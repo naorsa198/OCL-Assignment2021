@@ -36,7 +36,11 @@ public class ReservationSet implements  ITestable{
 
     @Override
     public boolean checkConstraints() {
-        return true;
+        if(reservations.size()< 5)
+            return true;
+
+//TODO HERE
+
     }
 
     public static boolean checkAllIntancesConstraints(Model model){

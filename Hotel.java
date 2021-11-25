@@ -59,7 +59,10 @@ public class Hotel implements  ITestable{
 
     @Override
     public boolean checkConstraints() {
-        return true;
+
+
+
+
     }
 
     public static boolean checkAllIntancesConstraints(Model model){

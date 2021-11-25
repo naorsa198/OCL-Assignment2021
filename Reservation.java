@@ -54,6 +54,8 @@ public class Reservation implements  ITestable {
 
     @Override
     public boolean checkConstraints() {
+        if (this.reservationSet.getHotel().ge )
+
         return true;
     }
 
